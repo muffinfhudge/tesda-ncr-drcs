@@ -1,0 +1,48 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: tesda-ncr-drcs-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drcs-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tesda-ncr-drcs-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - drcs-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tesda-ncr-drcs-frontend
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - drcs-net
+
+volumes:
+  db_data:
+
+networks:
+  drcs-net:
+    driver: bridge

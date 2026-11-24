@@ -1,0 +1,24 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Local database & document storage
+database/data/
+mysql-data/
+storage-data/
+
+# Laravel (backend)
+backend/vendor/
+backend/node_modules/
+backend/storage/*.key
+backend/bootstrap/cache/*.php
+
+# React (frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
